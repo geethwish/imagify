@@ -141,7 +141,7 @@ export const deepMergeObjects = (obj1: any, obj2: any) => {
 
   for (let key in obj1) {
     if (obj1.hasOwnProperty(key)) {
-      if (dsdsd
+      if (
         obj1[key] &&
         typeof obj1[key] === "object" &&
         obj2[key] &&
