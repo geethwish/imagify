@@ -13,15 +13,7 @@ import {
 } from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   aspectRatioOptions,
@@ -29,17 +21,18 @@ import {
   defaultValues,
   transformationTypes,
 } from "@/constants";
-import CustomField from "./CustomField";
+
 import { useEffect, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
-import MediaUploader from "@/components/shared/MediaUploader";
-import TransformedImage from "@/components/shared/TransformedImage";
+import MediaUploader from "./MediaUploader";
+import TransformedImage from "./TransformedImage";
 import { updateCredits } from "@/lib/actions/user.actions";
 import { getCldImageUrl } from "next-cloudinary";
 import { addImage, updateImage } from "@/lib/actions/image.actions";
 import { useRouter } from "next/navigation";
-import InsufficientCreditsModal from "@/components/shared/InsufficientCreditsModal";
 import { TransformationFormProps, Transformations } from "@/types";
+import CustomField from "./CustomField";
+import InsufficientCreditsModal from "./InsufficientCreditsModal";
 import { IImage } from "@/lib/database/models/image.model";
 
 export const formSchema = z.object({
@@ -72,7 +65,7 @@ const TransformationForm = ({
     data && action === "Update"
       ? {
           title: data?.title,
-          aspectRatio: data?.aspectRation,
+          aspectRatio: data?.aspectRatio,
           color: data?.color,
           prompt: data?.prompt,
           publicId: data?.publicId,
@@ -104,7 +97,7 @@ const TransformationForm = ({
         width: image?.width,
         height: image?.height,
         config: transformationConfig,
-        secureURL: image?.secureUrl,
+        secureURL: image?.secureURL,
         transformationURL: transformationUrl,
         aspectRatio: values.aspectRatio,
         prompt: values.prompt,
@@ -133,9 +126,9 @@ const TransformationForm = ({
         try {
           const updatedImage = await updateImage({
             image: {
-              ...imageData,
+              ...(imageData as any),
               _id: data?._id as string,
-            } as any,
+            },
             userId,
             path: `/transformations/${data?._id}`,
           });
@@ -218,9 +211,7 @@ const TransformationForm = ({
           name="title"
           formLabel="Image Title"
           className="w-full"
-          render={({ field }: any) => (
-            <Input {...field} className="input-field" />
-          )}
+          render={({ field }) => <Input {...field} className="input-field" />}
         />
 
         {type === "fill" && (
@@ -229,7 +220,7 @@ const TransformationForm = ({
             name="aspectRatio"
             formLabel="Aspect Ratio"
             className="w-full"
-            render={({ field }: any) => (
+            render={({ field }) => (
               <Select
                 onValueChange={(value) =>
                   onSelectFieldHandler(value, field.onChange)
@@ -260,7 +251,7 @@ const TransformationForm = ({
                 type === "remove" ? "Object to remove" : "Object to recolor"
               }
               className="w-full"
-              render={({ field }: any) => (
+              render={({ field }) => (
                 <Input
                   value={field.value}
                   className="input-field"
@@ -282,7 +273,7 @@ const TransformationForm = ({
                 name="color"
                 formLabel="Replacement Color"
                 className="w-full"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <Input
                     value={field.value}
                     className="input-field"
@@ -306,7 +297,7 @@ const TransformationForm = ({
             control={form.control}
             name="publicId"
             className="flex size-full flex-col"
-            render={({ field }: any) => (
+            render={({ field }) => (
               <MediaUploader
                 onValueChange={field.onChange}
                 setImage={setImage}
