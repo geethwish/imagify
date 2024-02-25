@@ -1,27 +1,34 @@
 import Header from "@/components/shared/Header";
-import React, { FC } from "react";
-import { transformationTypes } from "@/constants";
 import TransformationForm from "@/components/shared/TransformationForm";
+import { transformationTypes } from "@/constants";
+import { getUserById } from "@/lib/actions/user.actions";
+import { SearchParamProps, TransformationTypeKey } from "@/types";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-interface IAddTransformationTypePageProps {
-  params: {
-    type: "restore" | "removeBackground" | "fill" | "remove" | "recolor";
-  };
-}
-const AddTransformationTypePage: FC<IAddTransformationTypePageProps> = ({
+const AddTransformationTypePage = async ({
   params: { type },
-}) => {
+}: SearchParamProps) => {
+  const { userId } = auth();
   const transformation = transformationTypes[type];
+
+  if (!userId) redirect("/sign-in");
+
+  const user = await getUserById(userId);
+
   return (
-    <div>
+    <>
       <Header title={transformation.title} subtitle={transformation.subTitle} />
-      <TransformationForm
-        action={"Add"}
-        userId={""}
-        type={type}
-        creditBalance={0}
-      />
-    </div>
+
+      <section className="mt-10">
+        <TransformationForm
+          action="Add"
+          userId={user._id}
+          type={transformation.type as TransformationTypeKey}
+          creditBalance={user.creditBalance}
+        />
+      </section>
+    </>
   );
 };
 
